@@ -16,6 +16,7 @@ var file
 var track
 var data
 
+
 mongoClient.connect(mongoURL, {
   useNewUrlParser: true
 }, function (err, client) {
@@ -78,7 +79,8 @@ app.get('/respo', function (req, res) {
         // var timeon = val.timeon
       })
       fs.writeFileSync('aaa.mid', file.toBytes(), 'binary');
-      res.sendFile(file);
+      res.sendFile("/Users/connorslaptop/Desktop/piano/aaa.mid");
+      //res.send(file);
     })
 
 

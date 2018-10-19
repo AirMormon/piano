@@ -21,6 +21,7 @@ var banner = document.getElementById('recBanner')
 var submit = document.getElementById('subButton')
 var seconds = 0
 var stream = MediaRecorder.stream
+var songNotes
 
 c4.addEventListener('click', playNote(c4, 261.63, "c4"))
 db4.addEventListener('click', playNote(db4, 277.18, "db4"))
@@ -155,35 +156,12 @@ function playSong() {
 
 
     request.addEventListener('load', function () {
-        var data = this.response
-        console.log(data);
-
-
-        // var data = JSON.parse(this.responseText);
-        // data.forEach(function(val,i){
-        //   var notes = val.notes;
-        //   notes.forEach(function(val,i){
-        //      note = val.freq;
-        //      hold = val.time
-        //      var finHold = hold+4
-        //      console.log(note);
-        //      console.log(finHold);
-
-        //         var context = new AudioContext;
-        //         var gainNode = context.createGain();
-        //         var oscillator;
-        //         var seconds = 0
-        //         oscillator = context.createOscillator();
-        //             oscillator.connect(gainNode);
-        //             gainNode.gain.exponentialRampToValueAtTime(0.01, context.currentTime +hold)
-        //             oscillator.type = "triangle";
-        //             oscillator.frequency.value = note
-        //             gainNode.connect(context.destination);
-        //             oscillator.start()
-
-
-
-
+    songNotes = this.response
+    var sound      = document.createElement('audio');
+    sound.id       = 'audio-player';
+    sound.controls = 'controls';
+    sound.src      = songNotes;
+    document.body.appendChild(sound);
     })
 
 
