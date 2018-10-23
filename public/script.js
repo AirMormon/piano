@@ -1,3 +1,4 @@
+
 var recording = -1;
 var notes = []
 var time
@@ -87,13 +88,13 @@ function playNote(note, frequency, key) {
 
         function incrementSeconds() {
             held += 1;
+           // console.log(held)
         }
-        holding = setInterval(incrementSeconds, 1);
+        holding = setInterval(incrementSeconds, 100);
     });
     note.addEventListener('mouseup', function () {
         PickUpTime = seconds;
-        console.log(PickUpTime)
-        //held = held/100;
+        console.log(held)
         gainNode.gain.exponentialRampToValueAtTime(0.000000001, context.currentTime + 4)
         clearInterval(holding)
         if (recording == 1) {
@@ -104,7 +105,7 @@ function playNote(note, frequency, key) {
                 "timeon": PutDownTime,
                 "timeoff": PickUpTime
             })
-            console.log(notes)
+           // console.log(notes)
         } else {}
     })
 
@@ -117,11 +118,12 @@ function recSong() {
     recording = -recording
 
     if (recording == 1) {
-        time = setInterval(incrementSeconds, 10);
+        time = setInterval(incrementSeconds, 1000);
 
         function incrementSeconds() {
-            document.getElementById("recBanner").innerHTML = "Recording: " + seconds
             seconds += 1
+            document.getElementById("recBanner").innerHTML = "Recording: " + seconds
+            
 
         }
     }
@@ -143,30 +145,36 @@ function subSong() {
     xhttp.open("POST", "/data");
     xhttp.setRequestHeader('Content-Type', 'application/json');
     xhttp.send(arrStr);
-    console.log(contents);
+    //console.log(contents);
 
 }
 
 
 function playSong() {
+    var synth = new Tone.FMSynth().toMaster();
     var note
     var hold
     var request = new XMLHttpRequest();
     request.open("GET", '/respo', true)
-
-
     request.addEventListener('load', function () {
-    songNotes = this.response
-    var sound      = document.createElement('audio');
-    sound.id       = 'audio-player';
-    sound.controls = 'controls';
-    sound.src      = songNotes;
-    document.body.appendChild(sound);
+    songNotes = JSON.parse(this.response);
+    songNotes.forEach(function (val) {
+            var note = val.notes;
+            note.forEach(function (val){
+              var duration = val.duration;
+              var notePlayed = val.key;
+              var timeon = val.timeon;
+              var freq = val.freq
+              
+                console.log(freq)
+                
+                synth.triggerAttackRelease(freq,0.5,timeon)
+            })
+            
     })
-
-
-
-
+    //console.log(songNotes)
+   
+    })
 
     request.send();
 

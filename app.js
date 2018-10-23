@@ -1,6 +1,8 @@
 var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
+var MidiPlayer = require('midi-player-js');
+const synth = require('synth-js');
 var port = process.env.PORT || 5000;
 const mongoURL = 'mongodb://localhost:27017/mytestdb'
 const mongoClient = require('mongodb').MongoClient;
@@ -60,31 +62,43 @@ app.post('/name', function (req, res) {
   //console.log(name)
 })
 
+
 app.get('/respo', function (req, res) {
- file = new Midi.File();
- track = new Midi.Track();
-  
+//  file = new Midi.File();
+//  track = new Midi.Track();
   db.collection('practice').find({}).toArray(function (err, result){
 
-    result.forEach(function (val) {
-        var note = val.notes;
-        note.forEach(function (val){
-          var duration = val.duration;
-          var notePlayed = val.key;
-          var timeon = val.timeon;
-        file.addTrack(track);
-        track.addNote(0, notePlayed, duration, timeon);
+    // result.forEach(function (val) {
+    //     var note = val.notes;
+    //     note.forEach(function (val){
+    //       var duration = val.duration;
+    //       var notePlayed = val.key;
+    //       var timeon = val.timeon;
+    //     //file.addTrack(track);
+    //     //track.addNote(0, notePlayed, duration, timeon);
+    //     track.push(0, notePlayed, duration, timeon);
+    res.send(result)
         })
         // var duration = val.duration;
         // var timeon = val.timeon
       })
-      fs.writeFileSync('aaa.mid', file.toBytes(), 'binary');
-      res.sendFile("/Users/connorslaptop/Desktop/piano/aaa.mid");
-      //res.send(file);
-    })
+      
+    // fs.writeFileSync('./music/music.mid', file.toBytes(), 'binary');
+    // let midBuffer = fs.readFileSync('/Users/connorslaptop/Desktop/piano/music/music.mid');
+    // let wavBuffer = synth.midiToWav(midBuffer).toBuffer();
+    // fs.writeFileSync('./music/song.wav', wavBuffer, {encoding: 'binary'});
+
+    // var stat = fs.statSync('/Users/connorslaptop/Desktop/piano/music/song.wav')
+    // res.writeHead(200, {
+    // 'Content-Type': "audio/midi",
+    // 'Content-Length': stat.size
+    // })
+    // var readStream = fs.createReadStream('/Users/connorslaptop/Desktop/piano/music/song.wav');
+    // readStream.pipe(res);
+    // })
 
 
-})
+
 
 
 
