@@ -34,6 +34,11 @@ app.get('/', function (req, res) {
 });
 
 
+app.post('/del', function (req, res) {
+db.collection('practice').deleteMany({})
+})
+
+
 app.post('/data', function (req, res) {
 data = req.body.notes
   // file = new Midi.File();

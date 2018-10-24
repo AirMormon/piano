@@ -20,6 +20,8 @@ var pl = document.getElementById('playButton')
 var sto = document.getElementById('stopButton')
 var banner = document.getElementById('recBanner')
 var submit = document.getElementById('subButton')
+var delBut = document.getElementById('delButton')
+
 var seconds = 0
 var stream = MediaRecorder.stream
 var songNotes
@@ -40,6 +42,7 @@ c5.addEventListener('click', playNote(c5, 523.25, "c5"))
 pl.addEventListener('click', playSong);
 r.addEventListener("click", recSong);
 submit.addEventListener("click", subSong);
+delBut.addEventListener('click', delNotes)
 var input = document.getElementById('input')
 
 
@@ -146,6 +149,13 @@ function subSong() {
     xhttp.setRequestHeader('Content-Type', 'application/json');
     xhttp.send(arrStr);
     //console.log(contents);
+
+}
+
+function delNotes(){
+var request = new XMLHttpRequest
+request.open("POST", "/del");
+request.send();
 
 }
 
