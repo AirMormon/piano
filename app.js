@@ -4,7 +4,7 @@ var bodyParser = require('body-parser');
 var MidiPlayer = require('midi-player-js');
 const synth = require('synth-js');
 var port = process.env.PORT || 5000;
-const mongoURL = 'mongodb://localhost:27017/mytestdb'
+const mongoURL = 'mongodb://username:password1@ds231090.mlab.com:31090/piano'
 const mongoClient = require('mongodb').MongoClient;
 var jsonParser = bodyParser.json();
 var urlencodedParser = bodyParser.urlencoded({
@@ -24,7 +24,7 @@ mongoClient.connect(mongoURL, {
 }, function (err, client) {
   assert.equal(null, err);
   console.log("connected")
-  db = client.db("mytestdb")
+  db = client.db("piano")
 })
 app.use(express.static(__dirname + '/public'));
 
