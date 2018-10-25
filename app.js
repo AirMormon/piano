@@ -35,7 +35,7 @@ app.get('/', function (req, res) {
 
 
 app.post('/del', function (req, res) {
-db.collection('practice').deleteMany({})
+db.collection('practice').deleteMany({"title":id})
 })
 
 
@@ -63,16 +63,18 @@ data = req.body.notes
 
 });
 app.post('/name', function (req, res) {
-  title = req.body
-  //console.log(name)
+   id = req.body.name 
 })
 
 
 app.get('/respo', function (req, res) {
 //  file = new Midi.File();
 //  track = new Midi.Track();
-  db.collection('practice').find({}).toArray(function (err, result){
+  db.collection('practice').find({"title":id}).toArray(function (err, result){
+ if (err){
+console.log(err)
 
+ }
     // result.forEach(function (val) {
     //     var note = val.notes;
     //     note.forEach(function (val){

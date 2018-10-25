@@ -23,6 +23,7 @@ var submit = document.getElementById('subButton')
 var delBut = document.getElementById('delButton')
 
 var seconds = 0
+var newSeconds = 0;
 var stream = MediaRecorder.stream
 var songNotes
 
@@ -45,14 +46,21 @@ submit.addEventListener("click", subSong);
 delBut.addEventListener('click', delNotes)
 var input = document.getElementById('input')
 
-
+function noscroll() {
+    window.scrollTo( 0, 0 );
+  }
+  
+  // add listener to disable scroll
+  window.addEventListener('scroll', noscroll);
 
 input.onblur = function () {
     var name = document.getElementById('input').value;
-    // var arrStr = JSON.stringify(name)
+    var data = {"name":name}
+     var arrStr = JSON.stringify(data)
     request = new XMLHttpRequest
     request.open("POST", "/name", true)
-    request.send(name);
+    request.setRequestHeader('Content-Type', 'application/json');
+    request.send(arrStr);
     //console.log(name)
 }
 
@@ -72,6 +80,8 @@ function save() {
 }
 
 function playNote(note, frequency, key) {
+    var name = document.getElementById('input').value;
+  
     var held = 0
     var PutDownTime
     var PickUpTime
@@ -80,7 +90,7 @@ function playNote(note, frequency, key) {
     var oscillator;
     note.addEventListener('mousedown', function () {
         PutDownTime = seconds;
-        console.log(PutDownTime)
+        //console.log(PutDownTime)
         oscillator = context.createOscillator();
         oscillator.connect(gainNode);
         gainNode.gain.value = 1;
@@ -88,23 +98,15 @@ function playNote(note, frequency, key) {
         oscillator.frequency.value = frequency
         gainNode.connect(context.destination);
         oscillator.start(0)
-
-        function incrementSeconds() {
-            held += 1;
-           // console.log(held)
-        }
-        holding = setInterval(incrementSeconds, 100);
     });
     note.addEventListener('mouseup', function () {
         PickUpTime = seconds;
-        console.log(held)
-        gainNode.gain.exponentialRampToValueAtTime(0.000000001, context.currentTime + 4)
-        clearInterval(holding)
+       // console.log(held)
+        //gainNode.gain.exponentialRampToValueAtTime(0.000000001, context.currentTime + 4)
+        oscillator.stop();
         if (recording == 1) {
             notes.push({
                 "freq": frequency,
-                "duration": held,
-                "key": key,
                 "timeon": PutDownTime,
                 "timeoff": PickUpTime
             })
@@ -117,27 +119,57 @@ function playNote(note, frequency, key) {
 
 
 function recSong() {
+    var name = document.getElementById('input').value
+    if (name == ""){
+
+        alert('Please Enter a Song Title')
+    }else{
+        
     seconds = 0;
     recording = -recording
-
+    var start
+    var elapsed
     if (recording == 1) {
-        time = setInterval(incrementSeconds, 1000);
-
-        function incrementSeconds() {
-            seconds += 1
-            document.getElementById("recBanner").innerHTML = "Recording: " + seconds
-            
-
-        }
+        delNotes();
+        document.getElementById("recBanner").innerHTML = "Recording"
+         time = setInterval(incrementSeconds, 1);
+         start = new Date().getTime();
+        // yup = setInterval(displayStuff,1000)
+         int = setInterval(display, 1000);
     }
+        function incrementSeconds() {
+            elapsed = new Date().getTime() - start;
+            seconds = elapsed/1000
+            // document.getElementById("recBanner").innerHTML = "Recording"
+            // // if (document.getElementById("recBanner").innerHTML.length = 9){
+            //     document.getElementById("recBanner").innerHTML += "."
+            // }
+        }
+       
+        function display() {
+            if ((document.getElementById("recBanner").innerHTML += '.').length == 13) 
+            document.getElementById("recBanner").innerHTML = 'Recording';
+            //clearInterval( int ); // at some point, clear the setInterval
+        }
+
     if (recording == -1) {
         clearInterval(time)
-        document.getElementById("recBanner").innerHTML = ""
+        clearInterval(int)
+        //document.getElementById("recBanner").innerHTML = ""
+        seconds = 0;
+        //console.log(elapsed)
     }
-
+    }
 }
 
 function subSong() {
+    var name = document.getElementById('input').value
+    if (name == ""){
+        alert('Please Enter a Song Title')
+    }else{
+    recSong();
+    
+    document.getElementById("recBanner").innerHTML = ""
     var title = document.getElementById('input').value
     var xhttp = new XMLHttpRequest();
     var contents = {
@@ -149,19 +181,30 @@ function subSong() {
     xhttp.setRequestHeader('Content-Type', 'application/json');
     xhttp.send(arrStr);
     //console.log(contents);
-
+            };
 }
 
 function delNotes(){
+    var name = document.getElementById('input').value
+
+    if (name == ""){
+        alert('Please Enter a song title')
+        
+            }else{
 var request = new XMLHttpRequest
 request.open("POST", "/del");
 request.send();
 
 }
+}
 
 
 function playSong() {
-    var synth = new Tone.FMSynth().toMaster();
+    var name = document.getElementById('input').value
+    if (name == ""){
+        alert('Please Enter a song title')
+        
+            }else{
     var note
     var hold
     var request = new XMLHttpRequest();
@@ -171,15 +214,26 @@ function playSong() {
     songNotes.forEach(function (val) {
             var note = val.notes;
             note.forEach(function (val){
-              var duration = val.duration;
-              var notePlayed = val.key;
+                var context = new AudioContext;
+                
+            var oscillator;
+            var gainNode = context.createGain();
+             gainNode.gain.value = 1;
+              
               var timeon = val.timeon;
               var freq = val.freq
-              
-                console.log(freq)
+              var off = val.timeoff
+             
+                oscillator = context.createOscillator();
+                oscillator.connect(gainNode);
+                oscillator.type = "triangle";
+                oscillator.frequency.value = freq
+                gainNode.connect(context.destination);
+                oscillator.start(timeon)
+                oscillator.stop(off)
                 
-                synth.triggerAttackRelease(freq,0.5,timeon)
             })
+            
             
     })
     //console.log(songNotes)
@@ -187,5 +241,6 @@ function playSong() {
     })
 
     request.send();
-
 }
+}
+
